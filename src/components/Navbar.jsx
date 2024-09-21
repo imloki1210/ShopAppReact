@@ -57,7 +57,7 @@ const Navbar = (props) => {
     };
 
     fetchUserProfilePic();
-  }, [location]);
+  }, [location, auth.currentUser]);
 
   return (
     <div className="bg-white border-b border-gray-200">
