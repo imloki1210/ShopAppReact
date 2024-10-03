@@ -49,7 +49,7 @@ const Navbar = (props) => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const userData = docSnap.data();
-          setProfilePic(userData.photo || "https://via.placeholder.com/40");
+          setProfilePic('https://i.pinimg.com/736x/09/21/fc/0921fc87aa989330b8d403014bf4f340.jpg');
         }
       } else {
         setIsLoggedIn(false); // User is not logged in
@@ -58,6 +58,9 @@ const Navbar = (props) => {
 
     fetchUserProfilePic();
   }, [location, auth.currentUser]);
+
+  const isLoginPage = location.pathname === '/login';
+  const isSignUpPage = location.pathname === '/register';
 
   return (
     <div className="bg-white border-b border-gray-200">
@@ -78,7 +81,7 @@ const Navbar = (props) => {
         {/* Navigation Links */}
         <div className="flex items-center space-x-8 font-medium text-gray-800">
 
-          {isLoggedIn ? (
+          {isLoggedIn && (!isSignUpPage && !isLoginPage) ? (
             <>
               <NavLink
                 to="/home"

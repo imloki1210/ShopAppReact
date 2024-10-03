@@ -51,7 +51,7 @@ const Home = (props) => {
       filtered = filtered.filter(product => itemFilters.some(filter => product.category === filter));
     }
 
-    // If no filters are selected, show all products
+    // If no filters are selected show all products
     if (clothingFilters.length === 0 && itemFilters.length === 0) {
       filtered = products;
     }

@@ -1,18 +1,32 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { NavLink, useNavigate } from 'react-router-dom';
-import CartItem from '../components/CartItem';
-import { toast } from 'react-hot-toast';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { clearCart } from '../redux/Slices/CartSlice';  
+import CartItem from '../components/CartItem';
+import Modal from './Modal'; 
+import { toast } from 'react-hot-toast';
 
 const OrderSuccess = () => {
   const { cart } = useSelector((state) => state);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  useEffect(() => {
+    setTotalAmount(cart.reduce((acc, curr) => acc + curr.price, 0));
+  }, [cart]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const confirmOrder = () => {
+    setIsModalOpen(true);  
+  };
+
+  const handleFormSubmit = (formData) => {
     dispatch(clearCart());
     toast.success('Order placed successfully!');
+    setIsModalOpen(false);  // Close modal
     navigate('/home');  
   };
 
@@ -21,7 +35,6 @@ const OrderSuccess = () => {
       <h1 className="text-3xl font-bold mb-8">Order Summary</h1>
 
       <div className="w-full max-w-4xl bg-white p-6 rounded-lg shadow-lg">
-        {/* Display Cart Items */}
         {cart.length > 0 ? (
           <div>
             {cart.map((item) => (
@@ -46,8 +59,14 @@ const OrderSuccess = () => {
           </div>
         )}
       </div>
+
+      {/* Modal component */}
+      {isModalOpen && (
+        <Modal onClose={() => setIsModalOpen(false)} onSubmit={handleFormSubmit} />
+      )}
     </div>
   );
 };
 
 export default OrderSuccess;
+

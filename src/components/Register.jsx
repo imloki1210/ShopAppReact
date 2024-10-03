@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, db, storage } from "./firebase";
 import { setDoc, doc } from "firebase/firestore";
 import { toast } from 'react-hot-toast';
@@ -18,36 +17,34 @@ function Register() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoading(true)
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      let photoURL = "";
-
-      if (image) {
-        const imageRef = ref(storage, `profilePictures/${user.uid}`);
-        await uploadBytes(imageRef, image);
-        photoURL = await getDownloadURL(imageRef);
+      await createUserWithEmailAndPassword(auth, email, password);
+      const user = auth.currentUser;
+  
+      if (user) {
+        await setDoc(doc(db, "Users", user.uid), {
+          email: user.email,
+          firstName: fname,
+          lastName: lname,
+          photo:  "" 
+        });
       }
-
-      await setDoc(doc(db, "Users", user.uid), {
-        email: user.email,
-        firstName: fname,
-        lastName: lname,
-        photo: photoURL
+  
+      toast.success("User Registered Successfully!!", {
+        position: "top-center",
       });
-
-      toast.success("User Registered Successfully!!");
+      setLoading(false)
 
       setTimeout(() => {
         navigate("/login");
-      }, 1500);
+      }, 500);
 
     } catch (error) {
-      toast.error("Email already exists");;
-    } finally {
-      setLoading(false);
+      setLoading(false)
+      toast.error(error.message, {
+        position: "bottom-center",
+      });
     }
   };
 
@@ -103,7 +100,7 @@ function Register() {
         />
       </div>
 
-      <div className="mb-4">
+      {/* <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">Profile Picture</label>
         <div className="relative">
           <input
@@ -112,7 +109,7 @@ function Register() {
             onChange={(e) => setImage(e.target.files[0])}
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="mb-6">
         <button
